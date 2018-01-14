@@ -80,6 +80,7 @@ head(pentafreq,25)
 #****************************************************************************************
 source("files1/quiz/quiz2_functions.R")
 
+
 week3 <- function() {
   inputData <- c("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
   for(i in 1:length(inputData)) {
