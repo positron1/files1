@@ -32,6 +32,7 @@ corpus<-c(blogs,news,twitter)
 # }
 
 #****************************************************************************************
+
 library(quanteda)
 q_corpus<-corpus(corpus)
 
