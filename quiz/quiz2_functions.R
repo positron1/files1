@@ -42,22 +42,25 @@ getLastNwords <- function(txt, n, seperator = " ") {
 ##
 filterNgrams <- function(nGramDf, searchTxt) {
   # Will perl = TRUE incure performance issue ??? Or is it relevant ???
-  nGramDf[grep(paste("^", searchTxt, " ", sep = ""), nGramDf$Term, perl = TRUE), ][, c("Term")]
-}
+  df<-nGramDf[grep(paste("^", searchTxt, "$", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("word")]
+  
+  
+  as.character(df)
+  }
 
 ##
 ## Given a text string as input, predict the 3 following possible words
 ##
 getNextWordsSuggestion <- function(inputTxt) {
   suggestedWords <- c()
-  nGramDfNames <- c("fiveGramDf", "fourGramDf", "triGramDf", "biGramDf", "oneGramDf") # 4 3 2 1 0
+  nGramDfNames <- c("pentafreq", "quadfreq", "trifreq", "bifreq", "unifreq") # 4 3 2 1 0
   for (i in 1:length(nGramDfNames)) {
     lowerBound <- 5 - i
     if (getLengthOfWords(inputTxt) < lowerBound) {
       next
     } else {
       if (nGramDfNames[i] == nGramDfNames[5]) {
-        suggestedWords <- c(suggestedWords, get(nGramDfNames[i])[1:3, "Term"])
+        suggestedWords <- c(suggestedWords, get(nGramDfNames[i])[1:3, "word"])
       } else {
         lastNwords <- getLastNwords(inputTxt, lowerBound)
         suggestedWords<- c(suggestedWords, 
@@ -69,3 +72,6 @@ getNextWordsSuggestion <- function(inputTxt) {
   suggestedWords <- unique(suggestedWords)
   suggestedWords[1:3]
 }
+
+
+

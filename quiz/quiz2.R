@@ -2,9 +2,9 @@ library(tm)
 library(ggplot2)
 
 #setwd("C:/Users/Yue Yang/Desktop/R/capstone")
-blogs <- readLines("data/sub_en_US/en_US.blogs.txt", warn = FALSE, encoding = "UTF-8")
-news <- readLines("data/sub_en_US/en_US.news.txt", warn = FALSE, encoding = "UTF-8")
-twitter <- readLines("data/sub_en_US/en_US.twitter.txt", warn = FALSE, encoding = "UTF-8")
+blogs <- readLines("data/sub_en_US/sub_en_US.blogs.txt", warn = FALSE, encoding = "UTF-8")
+news <- readLines("data/sub_en_US/sub_en_US.news.txt", warn = FALSE, encoding = "UTF-8")
+twitter <- readLines("data/sub_en_US/sub_en_US.twitter.txt", warn = FALSE, encoding = "UTF-8")
 
 
 blogs<-sapply(blogs, function(x) iconv(x, "latin1", "ASCII", sub="")) #cleaning up
@@ -68,7 +68,7 @@ QuadgramsDense <- removeSparseTerms(Quadgrams, 0.999)
 PentagramsDense <- removeSparseTerms(Pentagrams, 0.9999)
 
 unifreq<-freq_frame(UnigramsDense)
-head(unifreq,15)
+head(unifreq,25)
 bifreq<-freq_frame(BigramsDense)
 head(bifreq,15)
 trifreq<-freq_frame(TrigramsDense)
@@ -82,7 +82,7 @@ source("files1/quiz/quiz2_functions.R")
 
 
 week3 <- function() {
-  inputData <- c("The guy in front of me just bought a pound of bacon, a bouquet, and a case of")
+  inputData <- c("The guy in front of me just bought a pound of bacon, a bouquet and a case of")
   for(i in 1:length(inputData)) {
     answer <- paste("Q", i, ": ", paste(getNextWordsSuggestion(inputData[i]), collapse = ","), sep = "")
     print(answer)
@@ -90,3 +90,8 @@ week3 <- function() {
 }
 week3()
 
+class(pentafreq[,"word"])
+filterNgrams(unifreq,"are")
+filterNgrams(bifreq,"they are ")
+            
+             
