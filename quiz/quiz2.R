@@ -2,9 +2,9 @@ library(tm)
 library(ggplot2)
 
 #setwd("C:/Users/Yue Yang/Desktop/R/capstone")
-blogs <- readLines("data/sub_en_US/sub_en_US.blogs.txt", warn = FALSE, encoding = "UTF-8")
-news <- readLines("data/sub_en_US/sub_en_US.news.txt", warn = FALSE, encoding = "UTF-8")
-twitter <- readLines("data/sub_en_US/sub_en_US.twitter.txt", warn = FALSE, encoding = "UTF-8")
+blogs <- readLines("data/sub_en_US/sub_en_US2.blogs.txt", warn = FALSE, encoding = "UTF-8")
+news <- readLines("data/sub_en_US/sub_en_US2.news.txt", warn = FALSE, encoding = "UTF-8")
+twitter <- readLines("data/sub_en_US/sub_en_US2.twitter.txt", warn = FALSE, encoding = "UTF-8")
 
 
 blogs<-sapply(blogs, function(x) iconv(x, "latin1", "ASCII", sub="")) #cleaning up
@@ -53,22 +53,22 @@ QuadgramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 4, max = 4
 PentagramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 5, max = 5))
 
 #Unigrams <- TermDocumentMatrix(corpus)
-Unigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = UnigramTokenizer))
-Bigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = BigramTokenizer))
-Trigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = TrigramTokenizer))
-Quadgrams <- TermDocumentMatrix(corpus1, control = list(tokenize = QuadgramTokenizer))
-Pentagrams <- TermDocumentMatrix(corpus1, control = list(tokenize = PentagramTokenizer))
+Unigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = UnigramTokenizer))
+Bigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = BigramTokenizer))
+Trigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = TrigramTokenizer))
+Quadgrams <- TermDocumentMatrix(corpus2, control = list(tokenize = QuadgramTokenizer))
+Pentagrams <- TermDocumentMatrix(corpus2, control = list(tokenize = PentagramTokenizer))
 
 #****************************************************************************************
 
-UnigramsDense <- removeSparseTerms(Unigrams, 0.999)
+UnigramsDense <- removeSparseTerms(Unigrams, 0.999999)
 BigramsDense <- removeSparseTerms(Bigrams, 0.999)
-TrigramsDense <- removeSparseTerms(Trigrams, 0.999)
-QuadgramsDense <- removeSparseTerms(Quadgrams, 0.999)
-PentagramsDense <- removeSparseTerms(Pentagrams, 0.9999)
+TrigramsDense <- removeSparseTerms(Trigrams, 0.99)
+QuadgramsDense <- removeSparseTerms(Quadgrams, 0.99)
+PentagramsDense <- removeSparseTerms(Pentagrams, 0.99)
 
 unifreq<-freq_frame(UnigramsDense)
-head(unifreq,25)
+head(unifreq,15)
 bifreq<-freq_frame(BigramsDense)
 head(bifreq,15)
 trifreq<-freq_frame(TrigramsDense)
@@ -76,22 +76,12 @@ head(trifreq,15)
 quadfreq<-freq_frame(QuadgramsDense)
 head(quadfreq,15)
 pentafreq<-freq_frame(PentagramsDense)
-head(pentafreq,25)
+head(pentafreq,15)
+
+sapply(list(unifreq,bifreq,trifreq,quadfreq,pentafreq),dim)
 #****************************************************************************************
 source("files1/quiz/quiz2_functions.R")
 
+week3("sometimes")
 
-week3 <- function() {
-  inputData <- c("The guy in front of me just bought a pound of bacon, a bouquet and a case of")
-  for(i in 1:length(inputData)) {
-    answer <- paste("Q", i, ": ", paste(getNextWordsSuggestion(inputData[i]), collapse = ","), sep = "")
-    print(answer)
-  }
-}
-week3()
 
-class(pentafreq[,"word"])
-filterNgrams(unifreq,"are")
-filterNgrams(bifreq,"they are ")
-            
-             

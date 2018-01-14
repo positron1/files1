@@ -42,8 +42,7 @@ getLastNwords <- function(txt, n, seperator = " ") {
 ##
 filterNgrams <- function(nGramDf, searchTxt) {
   # Will perl = TRUE incure performance issue ??? Or is it relevant ???
-  df<-nGramDf[grep(paste("^", searchTxt, "$", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("word")]
-  
+  df<-nGramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("word")]
   
   as.character(df)
   }
@@ -60,7 +59,7 @@ getNextWordsSuggestion <- function(inputTxt) {
       next
     } else {
       if (nGramDfNames[i] == nGramDfNames[5]) {
-        suggestedWords <- c(suggestedWords, get(nGramDfNames[i])[1:3, "word"])
+        suggestedWords <- c(suggestedWords, as.character(get(nGramDfNames[i])[1:3, "word"]))
       } else {
         lastNwords <- getLastNwords(inputTxt, lowerBound)
         suggestedWords<- c(suggestedWords, 
@@ -68,10 +67,21 @@ getNextWordsSuggestion <- function(inputTxt) {
       }
     }
   }
-  suggestedWords <- subset(suggestedWords, !(suggestedWords %in% stopwords()))
+  suggestedWords_final<-c()
   suggestedWords <- unique(suggestedWords)
-  suggestedWords[1:3]
+  suggestedWords_final[1:3]<-suggestedWords[1:3]
+  suggestedWords <- subset(suggestedWords, !(suggestedWords %in% stopwords()))
+  suggestedWords_final[4:6]<-suggestedWords[1:3]
+  suggestedWords_final
+  
 }
 
-
+week3 <- function(inputData) {
+  for(i in 1:length(inputData)) {
+    answer1 <- paste("Prob.", i, " with stopwords", ": ", paste((getNextWordsSuggestion(inputData[i]))[1:3], collapse = ","), sep = "")
+    answer2 <- paste("Prob.", i, " without stopwords",": ", paste((getNextWordsSuggestion(inputData[i]))[4:6], collapse = ","), sep = "")
+    print(answer1)
+    print(answer2)
+  }
+}
 
