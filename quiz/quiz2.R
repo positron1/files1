@@ -1,10 +1,11 @@
 library(tm)
 library(ggplot2)
+library(RWeka)
 
 #setwd("C:/Users/Yue Yang/Desktop/R/capstone")
-blogs <- readLines("data/sub_en_US/sub_en_US2.blogs.txt", warn = FALSE, encoding = "UTF-8")
-news <- readLines("data/sub_en_US/sub_en_US2.news.txt", warn = FALSE, encoding = "UTF-8")
-twitter <- readLines("data/sub_en_US/sub_en_US2.twitter.txt", warn = FALSE, encoding = "UTF-8")
+blogs <- readLines("data/sub_en_US/sub_en_US.blogs.txt", warn = FALSE, encoding = "UTF-8")
+news <- readLines("data/sub_en_US/sub_en_US.news.txt", warn = FALSE, encoding = "UTF-8")
+twitter <- readLines("data/sub_en_US/sub_en_US.twitter.txt", warn = FALSE, encoding = "UTF-8")
 
 
 blogs<-sapply(blogs, function(x) iconv(x, "latin1", "ASCII", sub="")) #cleaning up
@@ -45,27 +46,25 @@ freq_frame <- function(tdm){
 }
 
 #****************************************************************************************
-library(RWeka)
 UnigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 1, max = 1))
 BigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 2, max = 2))
 TrigramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
 QuadgramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 4, max = 4))
 PentagramTokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 5, max = 5))
 
-#Unigrams <- TermDocumentMatrix(corpus)
-Unigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = UnigramTokenizer))
-Bigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = BigramTokenizer))
-Trigrams <- TermDocumentMatrix(corpus2, control = list(tokenize = TrigramTokenizer))
-Quadgrams <- TermDocumentMatrix(corpus2, control = list(tokenize = QuadgramTokenizer))
-Pentagrams <- TermDocumentMatrix(corpus2, control = list(tokenize = PentagramTokenizer))
+Unigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = UnigramTokenizer))
+Bigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = BigramTokenizer))
+Trigrams <- TermDocumentMatrix(corpus1, control = list(tokenize = TrigramTokenizer))
+Quadgrams <- TermDocumentMatrix(corpus1, control = list(tokenize = QuadgramTokenizer))
+Pentagrams <- TermDocumentMatrix(corpus1, control = list(tokenize = PentagramTokenizer))
 
 #****************************************************************************************
 
-UnigramsDense <- removeSparseTerms(Unigrams, 0.999999)
-BigramsDense <- removeSparseTerms(Bigrams, 0.999)
-TrigramsDense <- removeSparseTerms(Trigrams, 0.99)
-QuadgramsDense <- removeSparseTerms(Quadgrams, 0.99)
-PentagramsDense <- removeSparseTerms(Pentagrams, 0.99)
+UnigramsDense <- removeSparseTerms(Unigrams, 0.9995)
+BigramsDense <- removeSparseTerms(Bigrams, 0.9995)
+TrigramsDense <- removeSparseTerms(Trigrams, 0.9998)
+QuadgramsDense <- removeSparseTerms(Quadgrams, 0.99995)
+PentagramsDense <- removeSparseTerms(Pentagrams, 0.99998)
 
 unifreq<-freq_frame(UnigramsDense)
 head(unifreq,15)
@@ -82,6 +81,18 @@ sapply(list(unifreq,bifreq,trifreq,quadfreq,pentafreq),dim)
 #****************************************************************************************
 source("files1/quiz/quiz2_functions.R")
 
-week3("sometimes")
+week3("just do")
 
+#****************************************************************************************
+save(unifreq,file="1gram_freq.Rda")
+save(bifreq,file="2gram_freq.Rda")
+save(trifreq,file="3gram_freq.Rda")
+save(quadfreq,file="4gram_freq.Rda")
+save(pentafreq,file="5gram_freq.Rda")
 
+load("files1/1gram_freq.Rda")
+load("files1/2gram_freq.Rda")
+load("files1/3gram_freq.Rda")
+load("files1/4gram_freq.Rda")
+load("files1/5gram_freq.Rda")
+rm(list = ls())
