@@ -40,11 +40,13 @@ getLastNwords <- function(txt, n, seperator = " ") {
 ##
 ## Match search text with entries in N Gram data.frame
 ##
-filterNgrams <- function(nGramDf, searchTxt) {
+filterNgrams <- function(nGramDf, nminus1GramDf, searchTxt) {
   # Will perl = TRUE incure performance issue ??? Or is it relevant ???
-  df<-nGramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("word")]
+  words<-nGramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("word")]
+  freq1<-nGramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("freq")]
+  freq2<-nminus1GramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("freq")]
   
-  as.character(df)
+  dataframe(words=as.character(df),freq=freq)
   }
 
 ##
@@ -62,11 +64,14 @@ getNextWordsSuggestion <- function(inputTxt) {
         suggestedWords <- c(suggestedWords, as.character(get(nGramDfNames[i])[1:3, "word"]))
       } else {
         lastNwords <- getLastNwords(inputTxt, lowerBound)
-        suggestedWords<- c(suggestedWords, 
-                           getLastWords(filterNgrams(get(nGramDfNames[i]), lastNwords)))
+        filterNgrams(get(nGramDfNames[i]),get(nGramDfNames[i-1]), lastNwords)
+        
+        suggestedWords<- c(suggestedWords,  getLastWords())
       }
     }
   }
+  
+  
   suggestedWords_final<-c()
   suggestedWords <- unique(suggestedWords)
   suggestedWords_final[1:3]<-suggestedWords[1:3]
