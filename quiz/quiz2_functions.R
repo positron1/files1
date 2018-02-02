@@ -46,7 +46,7 @@ filterNgrams <- function(nGramDf, nminus1GramDf, searchTxt) {
   freq1<-nGramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("freq")]
   freq2<-nminus1GramDf[grep(paste("^", searchTxt, " ", sep = ""), as.character(nGramDf$word), perl = TRUE), ][, c("freq")]
   
-  dataframe(words=as.character(df),freq=freq)
+  data.frame(words=as.character(df),freq=freq)
   }
 
 ##

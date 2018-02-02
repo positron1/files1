@@ -37,13 +37,13 @@ clean_corpus <- function(corpus, rm_stopwords=TRUE, rm_profanity=TRUE){
   corpus <- tm_map(corpus, stripWhitespace) # Remove unneccesary white spaces
   corpus <- tm_map(corpus, removeNumbers) # Remove numbers
   corpus <- tm_map(corpus, content_transformer(tolower)) # Convert to lowercase
-  if(rm_stopwords==TRUE){corpus <- tm_map(corpus1, removeWords, stopwords("english"))}
-  if(rm_profanity==TRUE){corpus <- tm_map(corpustr, removeWords, profane_words)}
+  if(rm_stopwords==TRUE){corpus <- tm_map(corpus, removeWords, stopwords("english"))}
+  if(rm_profanity==TRUE){corpus <- tm_map(corpus, removeWords, profane_words)}
   corpus <- tm_map(corpus, PlainTextDocument) # Plain text
   return(corpus)
 }
 
-corpus<-clean_corpus(corpus)
+corpus<-clean_corpus(corpus, TRUE, TRUE)
 
 #****************************************************************************************
 uni_tokenizer  <- function(x) NGramTokenizer(x, Weka_control(min = 1, max = 1))
@@ -52,13 +52,10 @@ tri_tokenizer  <- function(x) NGramTokenizer(x, Weka_control(min = 3, max = 3))
 quad_tokenizer <- function(x) NGramTokenizer(x, Weka_control(min = 4, max = 4))
 
 # Controls for the ngrams
-uni_control  <- list(tokenize = uni_tokenizer , bounds = list(global = c(5,Inf)))
-bi_control   <- list(tokenize = bi_tokenizer  , bounds = list(global = c(3,Inf)))
+uni_control  <- list(tokenize = uni_tokenizer , bounds = list(global = c(2,Inf)))
+bi_control   <- list(tokenize = bi_tokenizer  , bounds = list(global = c(2,Inf)))
 tri_control  <- list(tokenize = tri_tokenizer , bounds = list(global = c(2,Inf)))
 quad_control <- list(tokenize = quad_tokenizer, bounds = list(global = c(2,Inf)))
-
-# Sets the default number of threads to use
-options(mc.cores=3)
 
 # Generate the Term document matrix
 unigram_tdm  <- TermDocumentMatrix(corpus, control = uni_control)
@@ -74,6 +71,23 @@ bigram_tdm_dense <- removeSparseTerms(bigram_tdm, 0.9995)
 trigram_tdm_dense <- removeSparseTerms(trigram_tdm, 0.9995)
 quadgram_tdm_dense <- removeSparseTerms(quadgram_tdm, 0.9995)
 
+length(findFreqTerms(unigram_tdm, 1, 1))
+
+get_freq<-function(tdm, min_freq, max_freq)
+{
+  freq_matrix<-data.frame()
+  for (k in seq(min_freq,max_freq)) {
+    temp<-findFreqTerms(tdm, lowfreq = k, highfreq = k)
+    freq_matrix<-rbind(data.frame(word=temp, freq=rep(k,length(temp))),freq_matrix) 
+  }
+  
+  return(freq_matrix)
+}
+  
+df1<-get_freq(unigram_tdm,2,42)
+df2<-get_freq(bigram_tdm,2,42)
+df3<-get_freq(trigram_tdm,2,46)
+df4<-get_freq(quadgram_tdm,2,42)
 
 
 df_freq <- function(tdm){
@@ -90,31 +104,44 @@ quad_freq<-df_freq(quadgram_tdm_dense)
 sapply(list(uni_freq,bi_freq,tri_freq,quad_freq), dim)
 sapply(list(uni_freq,bi_freq,tri_freq,quad_freq), function(x) summary(x$freq) )
 
+sapply(list(df1,df2,df3,df4), dim)
+sapply(list(df1,df2,df3,df4), function(x) summary(x$freq) )
+
+uni_freq<-rbind(uni_freq,df1)
+bi_freq<-rbind(bi_freq,df2)
+tri_freq<-rbind(tri_freq,df3)
+quad_freq<-rbind(quad_freq,df4)
+
+uni_freq_ns<-uni_freq
+bi_freq_ns<-bi_freq
+tri_freq_ns<-tri_freq
+quad_freq_ns<-quad_freq
 #****************************************************************************************
-
-
-
 source("files1/quiz/quiz2_functions.R")
 
 week3("just do that")
 
 #****************************************************************************************
-save(unifreq,file="1gram.Rda")
-save(bifreq,file="2gram.Rda")
-save(trifreq,file="3gram.Rda")
-save(quadfreq,file="4gram.Rda")
+save(uni_freq,file="1gram.Rda")
+save(bi_freq,file="2gram.Rda")
+save(tri_freq,file="3gram.Rda")
+save(quad_freq,file="4gram.Rda")
 
+save(uni_freq_ns,file="1gram_ns.Rda")
+save(bi_freq_ns,file="2gram_ns.Rda")
+save(tri_freq_ns,file="3gram_ns.Rda")
+save(quad_freq_ns,file="4gram_ns.Rda")
+
+load("1gram.Rda")
+load("2gram.Rda")
+load("3gram.Rda")
+load("4gram.Rda")
 
 save(corpus1,file="corpus1.Rda")
 save(corpus2,file="corpus2.Rda")
 load("files1/corpus1.Rda")
 load("files1/corpus2.Rda")
 
-
-load("files1/1gram.Rda")
-load("files1/2gram.Rda")
-load("files1/3gram.Rda")
-load("files1/4gram.Rda")
 
 load("files1/oneGram.Rdata")
 
